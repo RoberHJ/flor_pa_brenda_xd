@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flores Para Ti</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #1a1a2e, #2c2c4e);
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      position: relative;
+      transition: background 1.5s ease;
+    }
+
+    body.day-mode {
+      background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+    }
+
+    .header {
+      text-align: center;
+      padding: 20px;
+      z-index: 10;
+      position: relative;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .title {
+      color: #FFD700;
+      font-size: min(48px, 8vw);
+      text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700;
+      animation: glow 2s ease-in-out infinite alternate;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .day-mode .title {
+      color: #FF8C00;
+      text-shadow: 0 0 20px #FF8C00, 0 0 30px #FF8C00;
+    }
+
+    .title:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px #FFD700, 0 0 30px #FFD700; }
+      to { text-shadow: 0 0 30px #FFD700, 0 0 40px #FFD700, 0 0 50px #FFA500; }
+    }
+
+    .subtitle {
+      color: #FFF;
+      font-size: min(24px, 5vw);
+      background: rgba(255, 215, 0, 0.3);
+      padding: 15px 25px;
+      border-radius: 30px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+      backdrop-filter: blur(10px);
+      max-width: 90%;
+      margin: 0 auto;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .day-mode .subtitle {
+      background: rgba(255, 140, 0, 0.3);
+      color: #333;
+      box-shadow: 0 0 25px rgba(255, 140, 0, 0.6);
+    }
+
+    .subtitle:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    }
+
+    .day-mode .subtitle:hover {
+      box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
+    }
+
+    .soil {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(to top, #3a2120, #4A2C2A);
+      z-index: 1;
+      border-top-left-radius: 50% 30%;
+      border-top-right-radius: 50% 30%;
+      transition: background 1.5s ease;
+    }
+
+    .day-mode .soil {
+      background: linear-gradient(to top, #8B4513, #A0522D);
+    }
+
+    .stem {
+      position: absolute;
+      bottom: 150px;
+      width: 8px;
+      background: linear-gradient(to top, #32CD32, #2E8B57, #228B22);
+      transform-origin: bottom;
+      animation: growStem 4s ease-out forwards;
+      z-index: 2;
+      box-shadow: 0 0 8px rgba(0, 100, 0, 0.6);
+      border-radius: 4px;
+      transition: background 1.5s ease, box-shadow 1.5s ease;
+    }
+
+    .day-mode .stem {
+      background: linear-gradient(to top, #7CFC00, #32CD32, #228B22);
+      box-shadow: 0 0 8px rgba(0, 128, 0, 0.6);
+    }
+
+    @keyframes growStem {
+      0% { height: 0px; opacity: 0; }
+      100% { height: var(--stem-height); opacity: 1; }
+    }
+
+    .leaf {
+      position: absolute;
+      width: 50px;
+      height: 30px;
+      background: linear-gradient(135deg, #3CB371, #228B22, #006400);
+      border-radius: 60% 20% 60% 20%;
+      transform-origin: left;
+      animation: growLeaf 4s ease-out forwards;
+      box-shadow: 0 2px 10px rgba(0, 100, 0, 0.6), inset 0 0 5px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+      transition: background 1.5s ease, box-shadow 1.5s ease;
+    }
+
+    .day-mode .leaf {
+      background: linear-gradient(135deg, #90EE90, #32CD32, #228B22);
+      box-shadow: 0 2px 10px rgba(0, 128, 0, 0.6), inset 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes growLeaf {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      100% { transform: scale(1) rotate(var(--leaf-rotate)); opacity: 1; }
+    }
+
+    .flower {
+      position: absolute;
+      bottom: calc(150px + var(--stem-height));
+      width: 90px;
+      height: 90px;
+      background: none;
+      animation: bloom 6s ease-out forwards;
+      z-index: 3;
+      cursor: pointer;
+    }
+
+    @keyframes bloom {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .petal {
+      position: absolute;
+      width: 48px;
+      height: 28px;
+      background: radial-gradient(circle at 50% 80%, #FFE4B5 20%, #FFD700 50%, #FFA500 80%);
+      border-radius: 70% 30% 70% 30% / 80% 20% 80% 20%;
+      transform-origin: center bottom;
+      animation: petalBloom 6s ease-out forwards;
+      transition: transform 0.5s ease, background 1.5s ease;
+      box-shadow: inset 0 -3px 5px rgba(139, 69, 19, 0.2), 0 3px 5px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      top: 31px;
+      left: 21px;
+    }
+
+    .day-mode .petal {
+      background: radial-gradient(circle at 50% 80%, #FFF5E6 20%, #FF8C00 50%, #FF4500 80%);
+      box-shadow: inset 0 -3px 5px rgba(139, 69, 19, 0.2), 0 3px 5px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 140, 0, 0.4);
+    }
+
+    .flower:hover .petal {
+      transform: rotate(var(--petal-rotate)) scale(1.15);
+    }
+
+    @keyframes petalBloom {
+      0% { transform: scale(0) rotate(0deg); opacity: 0; }
+      100% { transform: scale(1) rotate(var(--petal-rotate)); opacity: 1; }
+    }
+
+    .flower-center {
+      position: absolute;
+      top: 35px;
+      left: 25px;
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle, #5C4033 10%, #8B4513 40%, #3C2F2F 80%);
+      border-radius: 50%;
+      animation: bloomCenter 6s ease-out forwards;
+      z-index: 4;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4), 0 0 10px rgba(139, 69, 19, 0.7);
+      border: 1px solid #5C4033;
+      transition: transform 0.3s ease, background 1.5s ease, box-shadow 1.5s ease;
+    }
+
+    .day-mode .flower-center {
+      background: radial-gradient(circle, #8B4513 10%, #A0522D 40%, #5C4033 80%);
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4), 0 0 10px rgba(139, 69, 19, 0.7);
+      border: 1px solid #8B4513;
+    }
+
+    .flower:hover .flower-center {
+      transform: scale(1.2);
+    }
+
+    @keyframes bloomCenter {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, #FFFF00 30%, #FFD700 70%, transparent);
+      border-radius: 50%;
+      animation: sparkleRise 3s linear forwards;
+      z-index: 2;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    }
+
+    .day-mode .sparkle {
+      background: radial-gradient(circle, #FFD700 30%, #FF8C00 70%, transparent);
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.8);
+    }
+
+    @keyframes sparkleRise {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+    }
+
+    .falling-petal {
+      position: absolute;
+      width: 20px;
+      height: 15px;
+      background: linear-gradient(to bottom, #FFEF00, #FFD700);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: fall 8s linear infinite;
+      z-index: 0;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+      transition: background 1.5s ease, box-shadow 1.5s ease;
+    }
+
+    .day-mode .falling-petal {
+      background: linear-gradient(to bottom, #FFA500, #FF8C00);
+      box-shadow: 0 0 8px rgba(255, 140, 0, 0.6);
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .star {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #FFFF00;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: twinkle 2s ease-in-out infinite alternate;
+      z-index: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    .day-mode .star {
+      opacity: 0;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.5; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .message {
+      position: absolute;
+      top: calc(-60px * var(--scale-factor)); /* Position above the flower */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%) translateY(20px); /* Center and offset for animation */
+      background: rgba(255, 255, 255, 0.95);
+      padding: 6px 10px; /* Reduced padding for snug fit */
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+      font-size: calc(14px * var(--scale-factor)); /* Scale font size */
+      color: #333;
+      text-align: center;
+      z-index: 6; /* Above flower and center */
+      opacity: 0;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      max-width: calc(200px * var(--scale-factor)); /* Allow wider text */
+      display: inline-block; /* Fit background to content */
+      pointer-events: none;
+      font-weight: bold;
+    }
+
+    .day-mode .message {
+      box-shadow: 0 0 15px rgba(255, 140, 0, 0.8);
+    }
+
+    .flower:hover .message, .flower .message.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0); /* Center and slide up */
+    }
+
+    .explosion-letter {
+      position: absolute;
+      top: calc(-60px * var(--scale-factor)); /* Same starting position as message */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: calc(14px * var(--scale-factor));
+      color: #333;
+      font-weight: bold;
+      z-index: 7;
+      animation: explode 1.5s ease-out forwards;
+    }
+
+    .day-mode .explosion-letter {
+      color: #222;
+    }
+
+    @keyframes explode {
+      0% {
+        opacity: 1;
+        transform: translateX(-50%) translate(0, 0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translate(var(--dx), var(--dy)) rotate(var(--rotate));
+      }
+    }
+
+    .moon {
+      position: absolute;
+      top: 50px;
+      right: 50px;
+      width: 70px;
+      height: 70px;
+      background: radial-gradient(circle, #FFFDE7, #FFF9C4);
+      border-radius: 50%;
+      box-shadow: 0 0 25px #FFF9C4, 0 0 50px rgba(255, 249, 196, 0.6);
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+      cursor: pointer;
+      transition: transform 0.5s ease, background 1.5s ease, box-shadow 1.5s ease;
+    }
+
+    .day-mode .moon {
+      background: radial-gradient(circle, #FFD700, #FF8C00);
+      box-shadow: 0 0 25px #FF8C00, 0 0 50px rgba(255, 140, 0, 0.6);
+    }
+
+    .moon:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .sun {
+      position: absolute;
+      top: 50px;
+      right: 50px;
+      width: 70px;
+      height: 70px;
+      background: radial-gradient(circle, #FFD700, #FF8C00);
+      border-radius: 50%;
+      box-shadow: 0 0 25px #FF8C00, 0 0 50px rgba(255, 140, 0, 0.6);
+      animation: float 6s ease-in-out infinite;
+      z-index: 0;
+      cursor: pointer;
+      transition: transform 0.5s ease, opacity 1.5s ease;
+      opacity: 0;
+      display: none;
+    }
+
+    .day-mode .sun {
+      opacity: 1;
+      display: block;
+    }
+
+    .day-mode .moon {
+      opacity: 0;
+      display: none;
+    }
+
+    .custom-message-container {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .custom-message-container.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .custom-message-input {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      width: 200px;
+    }
+
+    .custom-message-btn {
+      padding: 8px 12px;
+      background: #FFD700;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .custom-message-btn:hover {
+      background: #FFA500;
+    }
+
+    .sound-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #1a1a2e, #2c2c4e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 215, 0, 0.3);
+      border-radius: 50%;
+      border-top-color: #FFD700;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .soil {
+        height: 100px;
+      }
+      
+      .stem {
+        width: 6px;
+      }
+      
+      .title {
+        font-size: 36px;
+      }
+      
+      .subtitle {
+        font-size: 18px;
+        padding: 12px 20px;
+      }
+      
+      .moon, .sun {
+        width: 50px;
+        height: 50px;
+        top: 30px;
+        right: 30px;
+      }
+      
+      .flower {
+        width: calc(80px * var(--scale-factor));
+        height: calc(80px * var(--scale-factor));
+        left: calc(var(--flower-x) - (80px * var(--scale-factor) / 2));
+      }
+      
+      .petal {
+        width: calc(38px * var(--scale-factor));
+        height: calc(22px * var(--scale-factor));
+        top: calc(29px * var(--scale-factor));
+        left: calc(21px * var(--scale-factor));
+      }
+      
+      .flower-center {
+        top: calc(31px * var(--scale-factor));
+        left: calc(22px * var(--scale-factor));
+        width: calc(36px * var(--scale-factor));
+        height: calc(36px * var(--scale-factor));
+      }
+
+      .leaf {
+        width: 40px;
+        height: 24px;
+      }
+
+      .custom-message-container {
+        flex-direction: column;
+        width: 80%;
+      }
+
+      .custom-message-input {
+        width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <div class="header">
+    <div class="title" aria-label="Flores Para Ti">Flores Para Ti 🌻</div>
+    <div class="subtitle" aria-label="Feliz 21 de septiembre">Feliz 21 de septiembre ❤️</div>
+  </div>
+  
+  <div class="moon" title="Cambiar a modo día" aria-label="Cambiar a modo día">🌙</div>
+  <div class="sun" title="Cambiar a modo noche" aria-label="Cambiar a modo noche">☀️</div>
+
+  <div class="sound-toggle" title="Activar/Desactivar sonido" aria-label="Activar o desactivar sonido">🔊</div>
+
+  <div class="custom-message-container">
+    <input type="text" class="custom-message-input" placeholder="Escribe tu mensaje..." aria-label="Escribe tu mensaje personalizado">
+    <button class="custom-message-btn" aria-label="Añadir mensaje personalizado">Añadir</button>
+  </div>
+  
+  <div class="container">
+    <div class="soil"></div>
+  </div>
+
+  <script>
+    // Variables globales
+    let isDayMode = false;
+    let soundEnabled = false;
+    let bloomSound, clickSound;
+    let petalInterval;
+    let performanceMode = false;
+
+    // Detectar si el dispositivo es de gama baja
+    function checkPerformance() {
+      return navigator.hardwareConcurrency <= 4 || 
+             (navigator.deviceMemory && navigator.deviceMemory <= 4);
+    }
+
+    // Precargar sonidos
+    function preloadSounds() {
+      try {
+        // Sonido de floración (short bloom sound)
+        bloomSound = new Audio();
+        bloomSound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3';
+        bloomSound.volume = 0.3;
+        
+        // Sonido de clic
+        clickSound = new Audio();
+        clickSound.src = 'https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3';
+        clickSound.volume = 0.2;
+      } catch (e) {
+        console.log("Error cargando sonidos:", e);
+      }
+    }
+
+    function createFlower(x, stemHeight, delay = 0, message = "") {
+      setTimeout(() => {
+        // Stem
+        const stem = document.createElement('div');
+        stem.className = 'stem';
+        stem.style.left = x + 'px';
+        stem.style.setProperty('--stem-height', stemHeight + 'px');
+        stem.style.animationDelay = (delay * 0.5) + 's';
+        document.querySelector('.container').appendChild(stem);
+
+        // Leaves
+        setTimeout(() => {
+          const leaf1 = document.createElement('div');
+          leaf1.className = 'leaf';
+          leaf1.style.left = (x - 20) + 'px';
+          leaf1.style.bottom = (150 + stemHeight * 0.4) + 'px';
+          leaf1.style.setProperty('--leaf-rotate', '30deg');
+          leaf1.style.animationDelay = delay + 's';
+          document.querySelector('.container').appendChild(leaf1);
+
+          const leaf2 = document.createElement('div');
+          leaf2.className = 'leaf';
+          leaf2.style.left = (x + 8) + 'px';
+          leaf2.style.bottom = (150 + stemHeight * 0.6) + 'px';
+          leaf2.style.setProperty('--leaf-rotate', '-30deg');
+          leaf2.style.animationDelay = delay + 's';
+          document.querySelector('.container').appendChild(leaf2);
+        }, 2000 + delay * 1000);
+
+        // Flower (appears after stem animation completes)
+        setTimeout(() => {
+          // Generate random scale factor between 0.8 and 1.2
+          const scaleFactor = 0.8 + Math.random() * 0.4;
+          const flowerWidth = 90 * scaleFactor;
+          const flowerHeight = 90 * scaleFactor;
+
+          const flower = document.createElement('div');
+          flower.className = 'flower';
+          flower.style.setProperty('--flower-x', x + 'px');
+          flower.style.setProperty('--stem-height', stemHeight + 'px');
+          flower.style.setProperty('--scale-factor', scaleFactor);
+          flower.style.width = flowerWidth + 'px';
+          flower.style.height = flowerHeight + 'px';
+          flower.style.left = `calc(var(--flower-x) - ${flowerWidth / 2}px)`; // Center flower on stem
+          flower.style.animationDelay = '0s'; // Start immediately after creation
+          document.querySelector('.container').appendChild(flower);
+
+          // Play bloom sound if enabled
+          if (soundEnabled && bloomSound) {
+            try {
+              bloomSound.currentTime = 0;
+              bloomSound.play().catch(e => console.log("Audio error:", e));
+            } catch (e) {
+              console.log("Error reproduciendo sonido:", e);
+            }
+          }
+
+          // Add message element
+          if (message) {
+            const msgElement = document.createElement('div');
+            msgElement.className = 'message';
+            msgElement.textContent = message;
+            flower.appendChild(msgElement);
+          }
+
+          // Petals
+          for (let i = 0; i < 12; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.transform = `rotate(${i * 30}deg)`;
+            petal.style.setProperty('--petal-rotate', `${i * 30}deg`);
+            petal.style.width = (48 * scaleFactor) + 'px';
+            petal.style.height = (28 * scaleFactor) + 'px';
+            petal.style.top = (31 * scaleFactor) + 'px';
+            petal.style.left = (21 * scaleFactor) + 'px';
+            petal.style.animationDelay = '0.5s'; // Start 0.5s after flower
+            flower.appendChild(petal);
+          }
+
+          // Center
+          const center = document.createElement('div');
+          center.className = 'flower-center';
+          center.style.width = (40 * scaleFactor) + 'px';
+          center.style.height = (40 * scaleFactor) + 'px';
+          center.style.top = (35 * scaleFactor) + 'px';
+          center.style.left = (25 * scaleFactor) + 'px';
+          center.style.animationDelay = '0s'; // Start with flower
+          flower.appendChild(center);
+
+          // Sparkles (continuous emission)
+          const sparkleIntervalTime = performanceMode ? 1000 : 500;
+          const sparkleInterval = setInterval(() => {
+            const sparkleCount = performanceMode ? 2 : 4;
+            for (let i = 0; i < sparkleCount; i++) {
+              const sparkle = document.createElement('div');
+              sparkle.className = 'sparkle';
+              sparkle.style.left = (x + Math.random() * 40 - 20) + 'px';
+              sparkle.style.bottom = (150 + stemHeight + Math.random() * 20) + 'px';
+              sparkle.style.animationDelay = (Math.random() * 1) + 's';
+              document.querySelector('.container').appendChild(sparkle);
+              setTimeout(() => {
+                if (sparkle.parentNode) {
+                  sparkle.parentNode.removeChild(sparkle);
+                }
+              }, 3000);
+            }
+          }, sparkleIntervalTime);
+
+          // Clear interval when page is hidden to improve performance
+          document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+              clearInterval(sparkleInterval);
+            } else {
+              setInterval(() => {
+                const sparkleCount = performanceMode ? 2 : 4;
+                for (let i = 0; i < sparkleCount; i++) {
+                  const sparkle = document.createElement('div');
+                  sparkle.className = 'sparkle';
+                  sparkle.style.left = (x + Math.random() * 40 - 20) + 'px';
+                  sparkle.style.bottom = (150 + stemHeight + Math.random() * 20) + 'px';
+                  sparkle.style.animationDelay = (Math.random() * 1) + 's';
+                  document.querySelector('.container').appendChild(sparkle);
+                  setTimeout(() => {
+                    if (sparkle.parentNode) {
+                      sparkle.parentNode.removeChild(sparkle);
+                    }
+                  }, 3000);
+                }
+              }, sparkleIntervalTime);
+            }
+          }, { once: true });
+
+          // Add click event to flower
+          flower.addEventListener('click', function() {
+            this.style.transform = 'scale(1.1)';
+            
+            if (soundEnabled && clickSound) {
+              try {
+                clickSound.currentTime = 0;
+                clickSound.play().catch(e => console.log("Audio error:", e));
+              } catch (e) {
+                console.log("Error reproduciendo sonido:", e);
+              }
+            }
+            
+            setTimeout(() => {
+              this.style.transform = 'scale(1)';
+            }, 300);
+            
+            if (message) {
+              // Explosion effect: Split message into individual letters
+              const letters = message.split('');
+              letters.forEach((letter, index) => {
+                const letterSpan = document.createElement('span');
+                letterSpan.className = 'explosion-letter';
+                letterSpan.textContent = letter === ' ' ? '\u00A0' : letter; // Handle spaces
+                // Randomize direction and rotation for explosion effect
+                const dx = (Math.random() - 0.5) * 100; // Random x offset (-50 to 50px)
+                const dy = (Math.random() - 0.5) * 100; // Random y offset (-50 to 50px)
+                const rotate = (Math.random() - 0.5) * 360; // Random rotation (-180 to 180deg)
+                letterSpan.style.setProperty('--dx', `${dx}px`);
+                letterSpan.style.setProperty('--dy', `${dy}px`);
+                letterSpan.style.setProperty('--rotate', `${rotate}deg`);
+                letterSpan.style.animationDelay = `${index * 0.05}s`; // Stagger letters
+                flower.appendChild(letterSpan);
+                // Remove letter after animation
+                setTimeout(() => {
+                  if (letterSpan.parentNode) {
+                    letterSpan.parentNode.removeChild(letterSpan);
+                  }
+                }, 2000); // Match animation duration (1.5s + buffer)
+              });
+
+              // Show static message after explosion
+              const msgElement = this.querySelector('.message');
+              if (msgElement) {
+                setTimeout(() => {
+                  msgElement.classList.add('visible');
+                  setTimeout(() => {
+                    msgElement.classList.remove('visible');
+                  }, 3000); // Hide after 3 seconds
+                }, 1500); // Wait for explosion animation to complete
+              }
+            }
+          });
+        }, 4000 + delay * 1000); // Flower appears after stem animation (4s)
+      }, delay * 1000);
+    }
+
+    function createFallingPetal() {
+      if (performanceMode && Math.random() > 0.7) return; // Reducir pétalos en modo rendimiento
+      
+      const petal = document.createElement('div');
+      petal.className = 'falling-petal';
+      petal.style.left = Math.random() * window.innerWidth + 'px';
+      petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      petal.style.animationDelay = Math.random() * 2 + 's';
+      document.body.appendChild(petal);
+      
+      // Limpiar después de la animación
+      setTimeout(() => {
+        if (petal.parentNode) {
+          petal.parentNode.removeChild(petal);
+        }
+      }, 8000);
+    }
+
+    function createStar(x, y) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = x + 'px';
+      star.style.top = y + 'px';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      star.style.width = (Math.random() * 8 + 8) + 'px';
+      star.style.height = star.style.width;
+      document.body.appendChild(star);
+    }
+
+    function toggleDayNight() {
+      isDayMode = !isDayMode;
+      document.body.classList.toggle('day-mode', isDayMode);
+      
+      // Cambiar el texto del tooltip
+      const moon = document.querySelector('.moon');
+      const sun = document.querySelector('.sun');
+      
+      if (isDayMode) {
+        moon.setAttribute('title', 'Cambiar a modo noche');
+        moon.setAttribute('aria-label', 'Cambiar a modo noche');
+        sun.setAttribute('title', 'Cambiar a modo noche');
+        sun.setAttribute('aria-label', 'Cambiar a modo noche');
+      } else {
+        moon.setAttribute('title', 'Cambiar a modo día');
+        moon.setAttribute('aria-label', 'Cambiar a modo día');
+        sun.setAttribute('title', 'Cambiar a modo día');
+        sun.setAttribute('aria-label', 'Cambiar a modo día');
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const soundToggle = document.querySelector('.sound-toggle');
+      
+      if (soundEnabled) {
+        soundToggle.innerHTML = '🔊';
+        soundToggle.setAttribute('title', 'Desactivar sonido');
+        soundToggle.setAttribute('aria-label', 'Desactivar sonido');
+      } else {
+        soundToggle.innerHTML = '🔇';
+        soundToggle.setAttribute('title', 'Activar sonido');
+        soundToggle.setAttribute('aria-label', 'Activar sonido');
+      }
+    }
+
+    function showCustomMessageInput() {
+      const container = document.querySelector('.custom-message-container');
+      container.classList.toggle('visible');
+    }
+
+    function addCustomMessage() {
+      const input = document.querySelector('.custom-message-input');
+      const message = input.value.trim();
+      
+      if (message) {
+        // Crear una nueva flor con el mensaje personalizado
+        const xPos = Math.random() * (window.innerWidth - 200) + 100;
+        const stemHeight = Math.random() * 100 + 200;
+        const delay = Math.random() * 3;
+        
+        createFlower(xPos, stemHeight, delay, message);
+        
+        // Limpiar el input y ocultar el contenedor
+        input.value = '';
+        document.querySelector('.custom-message-container').classList.remove('visible');
+      }
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar rendimiento del dispositivo
+      performanceMode = checkPerformance();
+      
+      // Precargar sonidos
+      preloadSounds();
+      
+      // Event listeners
+      document.querySelector('.moon').addEventListener('click', toggleDayNight);
+      document.querySelector('.sun').addEventListener('click', toggleDayNight);
+      document.querySelector('.sound-toggle').addEventListener('click', toggleSound);
+      document.querySelector('.custom-message-btn').addEventListener('click', addCustomMessage);
+      
+      // Mostrar el input de mensaje personalizado al hacer doble clic en el título
+      document.querySelector('.title').addEventListener('dblclick', showCustomMessageInput);
+      
+      // Permitir enviar mensaje con Enter
+      document.querySelector('.custom-message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          addCustomMessage();
+        }
+      });
+      
+      // Ocultar pantalla de carga cuando todo esté listo
+      setTimeout(() => {
+        document.querySelector('.loading-screen').style.opacity = '0';
+        setTimeout(() => {
+          document.querySelector('.loading-screen').style.display = 'none';
+        }, 500);
+      }, 1500);
+
+      // Flowers with messages
+      const centerX = window.innerWidth / 2;
+      createFlower(centerX - 100, 250, 0, "Te admiro mucho");
+      createFlower(centerX - 50, 280, 0.5, "Eres increible, no lo onvides");
+      createFlower(centerX, 300, 1, "Sabias que Brenda rima con Leyenda :v");
+      createFlower(centerX + 50, 260, 1.5, "Te debo unas de verdad XD");
+      createFlower(centerX + 100, 290, 2, "Eres única y especial");
+      createFlower(centerX - 150, 220, 2.5, "Feliz 21 de septiembre");
+
+      // Stars - menos estrellas en modo rendimiento
+      const starCount = performanceMode ? 15 : 30;
+      for (let i = 0; i < starCount; i++) {
+        createStar(Math.random() * window.innerWidth, Math.random() * 300);
+      }
+
+      // Falling petals - intervalo más largo en modo rendimiento
+      const petalIntervalTime = performanceMode ? 800 : 300;
+      petalInterval = setInterval(createFallingPetal, petalIntervalTime);
+      
+      // Make title interactive
+      document.querySelector('.title').addEventListener('click', function() {
+        this.style.animation = 'none';
+        setTimeout(() => {
+          this.style.animation = 'glow 2s ease-in-out infinite alternate';
+        }, 10);
+        
+        // Create additional falling petals on click (menos en modo rendimiento)
+        const petalCount = performanceMode ? 3 : 10;
+        for (let i = 0; i < petalCount; i++) {
+          setTimeout(() => createFallingPetal(), i * 100);
+        }
+      });
+    });
+
+    // Limpiar intervalos cuando la página se oculta para mejorar rendimiento
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        clearInterval(petalInterval);
+      } else {
+        const petalIntervalTime = performanceMode ? 800 : 300;
+        petalInterval = setInterval(createFallingPetal, petalIntervalTime);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Día de las Flores Amarillas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #000000, #1a1a00);
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Capas de fondo con efecto parallax */
+    .parallax-layer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .layer-back {
+      transform: translateZ(-300px) scale(2);
+    }
+
+    .layer-middle {
+      transform: translateZ(-150px) scale(1.5);
+    }
+
+    /* Estrellas animadas */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: transparent;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 2s infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 1; }
+    }
+
+    /* Flores cayendo */
+    .flowers-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .flower {
+      position: absolute;
+      font-size: 24px;
+      color: #ffff33;
+      text-shadow: 0 0 10px #ffea00;
+      opacity: 0;
+      top: -50px;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0.7;
+      }
+    }
+
+    /* Contenido principal */
+    .content {
+      position: relative;
+      z-index: 10;
+      padding: 20px;
+      max-width: 90%;
+    }
+
+    /* Texto principal */
+    h1 {
+      font-size: min(3.5em, 10vw);
+      color: #ffff33;
+      text-shadow: 0 0 20px #ffff66, 0 0 35px #ffea00;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeInZoom 2.5s ease forwards;
+    }
+
+    h2 {
+      font-size: min(2em, 6vw);
+      color: #ffff33;
+      margin-top: 10px;
+      text-shadow: 0 0 15px #ffff66;
+      opacity: 0;
+      animation: fadeIn 2.5s ease forwards;
+      animation-delay: 2s;
+    }
+
+    p {
+      font-size: min(1.5em, 5vw);
+      margin: 25px 0;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px white;
+      opacity: 0;
+      animation: fadeIn 2.5s ease forwards;
+      animation-delay: 4s;
+    }
+
+    /* Botón animado */
+    .boton {
+      display: inline-block;
+      padding: 15px 35px;
+      border: 2px solid #ff00ff;
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      text-decoration: none;
+      font-size: min(1.4em, 5vw);
+      border-radius: 10px;
+      margin-top: 20px;
+      opacity: 0;
+      transform: scale(0.8);
+      animation: fadeInUp 2.5s ease forwards, glow 2s infinite alternate;
+      animation-delay: 6s;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .boton:hover {
+      transform: scale(1.05);
+    }
+
+    /* Animaciones */
+    @keyframes fadeInZoom {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(50px) scale(0.8); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff inset; }
+      100% { box-shadow: 0 0 25px #ff00ff, 0 0 50px #ff00ff inset; }
+    }
+
+    /* Efectos de sonido */
+    .audio-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      cursor: pointer;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-layer layer-back"></div>
+  <div class="parallax-layer layer-middle"></div>
+  <div class="stars" id="stars"></div>
+  <div class="flowers-container" id="flowers"></div>
+
+  <div class="content">
+    <h1>FELIZ DÍA DE LAS FLORES AMARILLAS</h1>
+    <h2>BRENDA 😊</h2>
+    <p>TENGO UN REGALO ESPECIAL PARA TI</p>
+    <a href="fl/flor_pa_brenda.html" class="boton">VER TU REGALO</a>
+  </div>
+
+  <button class="audio-control" id="audioControl">♪</button>
+  <audio id="backgroundAudio" loop>
+    <source src="https://assets.mixkit.co/music/preview/mixkit-sparkling-and-charming-11.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Generar estrellitas aleatorias
+    const starsContainer = document.getElementById('stars');
+    const numStars = 120;
+
+    for (let i = 0; i < numStars; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+      star.style.animationDelay = (Math.random() * 5) + 's';
+      starsContainer.appendChild(star);
+    }
+
+    // Generar flores que caen
+    const flowersContainer = document.getElementById('flowers');
+    const flowerSymbols = ['❀', '✿', '🌸', '💮', '🏵️'];
+    
+    function createFlower() {
+      const flower = document.createElement('div');
+      flower.className = 'flower';
+      flower.innerHTML = flowerSymbols[Math.floor(Math.random() * flowerSymbols.length)];
+      
+      const size = Math.random() * 20 + 15;
+      flower.style.fontSize = `${size}px`;
+      flower.style.left = Math.random() * 100 + '%';
+      flower.style.animationDuration = (Math.random() * 10 + 5) + 's';
+      flower.style.animationDelay = (Math.random() * 5) + 's';
+      
+      flowersContainer.appendChild(flower);
+      
+      // Eliminar la flor después de que termine la animación
+      setTimeout(() => {
+        flower.remove();
+      }, 15000);
+    }
+    
+    // Crear flores periódicamente
+    setInterval(createFlower, 300);
+    
+    // Crear algunas flores iniciales
+    for (let i = 0; i < 10; i++) {
+      setTimeout(createFlower, i * 300);
+    }
+
+    // Control de audio
+    const audioControl = document.getElementById('audioControl');
+    const backgroundAudio = document.getElementById('backgroundAudio');
+    let audioPlaying = false;
+    
+    audioControl.addEventListener('click', () => {
+      if (audioPlaying) {
+        backgroundAudio.pause();
+        audioControl.innerHTML = '♪';
+      } else {
+        backgroundAudio.play().catch(e => {
+          console.log('La reproducción automática fue prevenida:', e);
+        });
+        audioControl.innerHTML = '▮▮';
+      }
+      audioPlaying = !audioPlaying;
+    });
+
+    // Efecto de parallax con movimiento del ratón
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth / 2 - e.clientX) / 25;
+      const y = (window.innerHeight / 2 - e.clientY) / 25;
+      
+      const layers = document.querySelectorAll('.parallax-layer');
+      layers.forEach((layer, index) => {
+        const depth = index + 1;
+        const moveX = x * depth;
+        const moveY = y * depth;
+        
+        layer.style.transform = `translate(${moveX}px, ${moveY}px) translateZ(-${150 * depth}px) scale(${1 + depth * 0.5})`;
+      });
+    });
+  </script>
+</body>
+</html>
